@@ -23,6 +23,9 @@ public abstract class MobileDevice extends Device {
     public static final int NEW_COMMAND_TIMEOUT = 60 * 60 * 12;
     public static final String NATIVE_CONTEXT = "NATIVE_APP";
 
+    private boolean isAppiumLogsWsRunning = false;
+    private String wsUrl;
+
     private AppiumNativePageSourceHandler appiumNativePageSourceHandler;
 
     protected Mobile mobile;
@@ -109,5 +112,24 @@ public abstract class MobileDevice extends Device {
 
     public boolean isNativeContext() {
         return NATIVE_CONTEXT.equals(((AppiumDriver) driver).getContext());
+    }
+
+    public synchronized String startLogsBroadcast() {
+        if (!isAppiumLogsWsRunning) {
+            driver.executeScript("mobile:startLogsBroadcast");
+            wsUrl = String.format("ws://%s:%d/ws/session/%s/appium/device/%s",
+                    agentIp, deviceServer.getPort(), driver.getSessionId().toString(), getLogName());
+            isAppiumLogsWsRunning = true;
+        }
+        return wsUrl;
+    }
+
+    public abstract String getLogName();
+
+    public synchronized void stopLogsBroadcast() {
+        if (isAppiumLogsWsRunning) {
+            driver.executeScript("mobile:stopLogsBroadcast");
+            isAppiumLogsWsRunning = false;
+        }
     }
 }

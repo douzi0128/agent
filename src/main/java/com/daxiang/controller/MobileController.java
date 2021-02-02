@@ -33,4 +33,15 @@ public class MobileController {
         Mobile mobile = mobileService.delete(mobileId);
         return Response.success(mobile);
     }
+
+    @GetMapping("/{mobileId}/startLogsBroadcast")
+    public Response startLogsBroadcast(@PathVariable String mobileId) {
+        return Response.success(mobileService.startLogsBroadcast(mobileId));
+    }
+
+    @GetMapping("/{mobileId}/stopLogsBroadcast")
+    public Response stopLogsBroadcast(@PathVariable String mobileId) {
+        mobileService.stopLogsBroadcast(mobileId);
+        return Response.success();
+    }
 }
